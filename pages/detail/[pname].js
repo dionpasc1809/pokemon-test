@@ -1,11 +1,20 @@
-import { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import axios from "axios";
 import Head from "next/head";
+import Image from "next/image";
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import {
   Container,
   InnerContainer,
+  Header,
+  HeaderButton,
+  PokemonItemId,
+  PokemonItemName,
+  PokemonItemTypeWrapper,
+  PokemonItemTypeSpan,
+  PokemonImageWrapper,
 } from "./style";
 
 export default function DetailPokemon() {
@@ -127,7 +136,34 @@ export default function DetailPokemon() {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <InnerContainer>
-        {singlePokemon?.species[0]?.name}
+        {!hasFetched || (
+          <Fragment>
+            <Header>
+              <Link href="/">
+                <HeaderButton>
+                  <Image src="/ic-back.svg" width="24" height="24" alt="back" />
+                </HeaderButton>
+              </Link>
+            </Header>
+            <PokemonItemId>{hasFetched && handleIdMap(singlePokemon?.species[0]?.id) || ''}</PokemonItemId>
+            <PokemonItemName>{hasFetched && handleNameFormat(singlePokemon?.species[0]?.name) || ''}</PokemonItemName>
+            <PokemonItemTypeWrapper>
+              {
+                (hasFetched && singlePokemon?.species?.length > 0) && singlePokemon?.species[0]?.pokemons[0]?.types.map((t, tidx) => {
+                  return <PokemonItemTypeSpan key={tidx}>{t.type.name}</PokemonItemTypeSpan>
+                })
+              }
+            </PokemonItemTypeWrapper>
+            <PokemonImageWrapper>
+              <Image
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${singlePokemon?.species[0]?.id || 0}.png`}
+                height="343px"
+                width="343px"
+                alt={singlePokemon?.species[0]?.name || ''}
+              />
+            </PokemonImageWrapper>
+          </Fragment>
+        )}
       </InnerContainer>
     </Container>
   );
